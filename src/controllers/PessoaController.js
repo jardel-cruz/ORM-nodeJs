@@ -62,6 +62,65 @@ class PessoasController {
             return res.status(500).json(error.message)
         }
     }
+
+    static async pegaUmaMatricula (req, res) {
+        try {
+            const { estuId, matrId } = req.params
+            const where = {where: {
+                id: Number(matrId),
+                estudante_id: Number(estuId)
+            }}
+            const matricula = await database.Matriculas.findOne(where)
+
+            return res.status(200).json(matricula)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async addMatricula (req, res) {
+        try {
+            const { estuId } = req.params
+            const {status, turma_id} = req.body
+            const novaMatricula = {
+                status: String(status),
+                turma_id: Number(turma_id),
+                estudante_id: Number(estuId)
+            }
+            const criarMatricula = await database.Matriculas.create(novaMatricula)
+
+            return res.status(201).json(criarMatricula)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async atualizarMatricula (req, res) {
+        try {
+            const { estuId, matrId } = req.params
+            const { body } = req
+            const where = {where: {id: Number(matrId), estudante_id: Number(estuId)}}
+            await database.Matriculas.update(body, where)
+            const matriculaAtualizada = await database.Matriculas.findOne({ where: {id: Number(matrId)} })
+
+            return res.status(201).json(matriculaAtualizada)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async deletarMatricula (req, res) {
+        try {
+            const { estuId, matrId } = req.params
+            const where = {where: {id: Number(matrId), estudante_id: Number(estuId)}}
+            await database.Matriculas.destroy(where)
+
+            return res.status(201).json({ message: `Matricula: ${matrId} deletado com sucesso!` })
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
 }
 
 module.exports = PessoasController
