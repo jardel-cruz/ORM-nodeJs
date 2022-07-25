@@ -1,3 +1,4 @@
+const db = require('../models')
 const database = require('../models')
 
 class PessoasController {
@@ -63,6 +64,27 @@ class PessoasController {
         }
     }
 
+    static async restauraPessoa (req, res) {
+        try {
+            const { id } = req.params
+            await database.Pessoas.restore({ where: {id: Number(id)} })
+
+            return res.status(200).json({ message: `id: ${id} restaurado com sucesso` })
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async pegaTodasMatriculas (req, res) {
+        try {
+            const matriculas = await database.Matriculas.findAll()
+
+            return res.status(200).json(matriculas)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
     static async pegaUmaMatricula (req, res) {
         try {
             const { estuId, matrId } = req.params
@@ -116,6 +138,18 @@ class PessoasController {
             await database.Matriculas.destroy(where)
 
             return res.status(201).json({ message: `Matricula: ${matrId} deletado com sucesso!` })
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async restauraMatriculas (req, res) {
+        try {
+            const { estuId, matrId } = req.params
+            const where = {where: {id: Number(matrId), estudante_id: Number(estuId)}}
+            await database.Matriculas.restore(where)
+
+            return res.status(201).json({ message: `Matricula: ${matrId} restaurada com sucesso!` })
         } catch (error) {
             return res.status(500).json(error.message)
         }
